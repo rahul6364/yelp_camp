@@ -44,10 +44,7 @@ pipeline{
                     -Dsonar.token=sqp_e91e749968148c002dc26a858aa0a3cfe07a3f22 \
                     -Dsonar.host.url=http://sonarqube:9000 \
                     
-  -Dsonar.projectKey=
-                   
                     '''
-                    sonar \
   
   
                 }
