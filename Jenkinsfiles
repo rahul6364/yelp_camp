@@ -1,11 +1,13 @@
 pipeline{
     agent any
     
-     tools {
-        jdk 'jdk'
-        nodejs 'nodejs'
-    }
+    //  tools {
+    //     jdk 'jdk'
+    //     nodejs 'nodejs'
+    // }
     environment {
+        NODEJS_HOME = tool name: 'nodejs', type: 'NodeJSInstallation'
+        PATH = "${NODEJS_HOME}/bin:${env.PATH}"
         SONAR_SCANNER=tools 'sonarqube'
     }
 
