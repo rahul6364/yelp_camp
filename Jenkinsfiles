@@ -1,0 +1,67 @@
+pipeline{
+    agent any
+    tools {
+        nodejs "nodejs"
+    }
+    environment{
+        SONAR_SCANNER=tools 'sonarqube'
+    }
+
+    stages{
+        stage('git checkout'){
+            steps{
+                git branch: 'main', credentialsId: 'github', url: 'https://github.com/rahul6364/yelp_camp.git'
+            }
+        }
+        stage('install dependencies'){
+            steps{
+                sh 'npm install'
+            }
+        }
+        stage('test case'){
+            steps{
+                sh 'npm test'
+            }
+        }
+        stage('trivy fs scan'){
+            steps{
+                sh "trivy fs --format table -o trivy-report.txt ."
+            }
+        }
+        stage('sonarqube scanner'){
+            steps{
+                sh " ${SONAR_SCANNER}/bin/sonar-scanner \
+            -Dsonar.host.url=http://sonarqube:9001 \
+            // -Dsonar.token=sqp_910c5e151a3ac2d96ab3bcf9b5c93d0991164999 \
+            -Dsonar.projectKey=yelp-camp \
+            -Dsonar.projectName=yelp-camp"
+            }
+        }
+
+        stage('image build and tag'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
+                        sh "docker build -t rahul6364/yelp-camp:latest ."
+                    }
+                }
+            }
+        }
+
+        stage('trivy image scan'){
+            steps{
+                sh "trivy image --format table -o trivy-report.txt rahul6364/yelp-camp:latest"
+            }
+        }
+        stage('image run'){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
+                        sh "docker run -d -p 3000:3000 rahul6364/yelp-camp:latest"
+                    }
+                }
+            }
+        }
+
+    }
+}
