@@ -34,10 +34,6 @@ pipeline{
             }
         }
         stage('sonarqube scanner'){
-
-            withSonarQubeEnv(credentialsId: 'sonar-token') {
-    // some block
-}
             steps{
                 withSonarQubeEnv('sonarqube') {
                     sh ''' 
