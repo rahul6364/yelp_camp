@@ -8,7 +8,7 @@ pipeline{
     environment {
         // NODEJS_HOME = tool name: 'nodejs', type: 'NodeJSInstallation'
         // PATH = "${NODEJS_HOME}/bin:${env.PATH}"
-        SONAR_SCANNER='sonarqube'
+        SONAR_SCANNER=tool 'sonarqube'
     }
 
     stages{
