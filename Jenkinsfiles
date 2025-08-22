@@ -9,6 +9,7 @@ pipeline{
         // NODEJS_HOME = tool name: 'nodejs', type: 'NodeJSInstallation'
         // PATH = "${NODEJS_HOME}/bin:${env.PATH}"
         SONAR_SCANNER=tool 'sonarqube'
+        SONAR_TOKEN=credentialsId('sonar-token')
     }
 
     stages{
@@ -33,13 +34,20 @@ pipeline{
             }
         }
         stage('sonarqube scanner'){
+
+            withSonarQubeEnv(credentialsId: 'sonar-token') {
+    // some block
+}
             steps{
                 withSonarQubeEnv('sonarqube') {
                     sh ''' 
                     ${SONAR_SCANNER}/bin/sonar-scanner \
                     -Dsonar.host.url=http://sonarqube:9000 \
+                    -Dsonar.sources=. \
+                    -Dsonar.token=${SONAR_TOKEN} \
                     -Dsonar.projectKey=yelp-camp \
                     -Dsonar.projectName=yelp-camp
+                   
                     '''
                 }
             }
