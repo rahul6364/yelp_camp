@@ -8,7 +8,8 @@ pipeline{
     environment {
         // NODEJS_HOME = tool name: 'nodejs', type: 'NodeJSInstallation'
         // PATH = "${NODEJS_HOME}/bin:${env.PATH}"
-        SONAR_SCANNER=tool 'sonarqube'
+        // SONAR_SCANNER=tool 'sonarqube'
+        SONAR_SCANNER = tool 'sonarqube'
         SONAR_TOKEN=credentials('sonar-token')
     }
 
@@ -35,17 +36,28 @@ pipeline{
         }
         stage('sonarqube scanner'){
             steps{
-                withSonarQubeEnv('sonarqube') {
-                sh '''
-                        ${SCANNER_HOME}/bin/sonar-scanner \
-                        -Dsonar.projectKey=camp \
-                        -Dsonar.projectName=camp \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=http://sonarqube:9000 \
-                        -Dsonar.token=${SONAR_TOKEN}
-                    '''
+                // withSonarQubeEnv('sonarqube') {
+                // sh '''
+                //         ${SCANNER_HOME}/bin/sonar-scanner \
+                //         -Dsonar.projectKey=camp \
+                //         -Dsonar.projectName=camp \
+                //         -Dsonar.sources=. \
+                //         -Dsonar.host.url=http://sonarqube:9000 \
+                //         -Dsonar.token=${SONAR_TOKEN}
+                //     '''
   
+                // }
+               
+                withSonarQubeEnv('sonar-server') {
+                sh '''
+                    $SONAR_SCANNER/bin/sonar-scanner \
+                    -Dsonar.projectKey=MyProject \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=http://sonarqube:9000 \
+                    -Dsonar.login=$SONAR_TOKEN
+                '''
                 }
+
             }
         }
 
