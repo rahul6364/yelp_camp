@@ -37,8 +37,7 @@ pipeline{
                 withSonarQubeEnv('sonarqube') {
                     sh ''' 
                     ${SONAR_SCANNER}/bin/sonar-scanner \
-                    -Dsonar.host.url=http://sonarqube:9001 \
-                     // -Dsonar.token=sqp_910c5e151a3ac2d96ab3bcf9b5c93d0991164999 \
+                    -Dsonar.host.url=http://sonarqube:9000 \
                     -Dsonar.projectKey=yelp-camp \
                     -Dsonar.projectName=yelp-camp
                     '''
