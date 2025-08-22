@@ -36,16 +36,23 @@ pipeline{
         stage('sonarqube scanner'){
             steps{
                 withSonarQubeEnv('sonarqube') {
-                    sh ''' 
-                    ${SONAR_SCANNER}/bin/sonar-scanner \
-                    -Dsonar.projectKey=camp \
-                    -Dsonar.projectName=camp                    
-                    -Dsonar.sources=. \
-                    -Dsonar.token=sqp_e91e749968148c002dc26a858aa0a3cfe07a3f22 \
-                    -Dsonar.host.url=http://sonarqube:9000 \
+                    // sh ''' 
+                    // ${SONAR_SCANNER}/bin/sonar-scanner \
+                    // -Dsonar.projectKey=camp \
+                    // -Dsonar.projectName=camp                    
+                    // -Dsonar.sources=. \
+                    // -Dsonar.token=sqp_e91e749968148c002dc26a858aa0a3cfe07a3f22 \
+                    // -Dsonar.host.url=http://sonarqube:9000 \
                     
+                    // '''
+                sh '''
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectKey=camp \
+                        -Dsonar.projectName=camp \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.token=${SONAR_TOKEN}
                     '''
-  
   
                 }
             }
