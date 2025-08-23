@@ -35,16 +35,14 @@ pipeline{
             steps{
                 withSonarQubeEnv('sonarqube') {
                     sh '''
-                        ${SCANNER_HOME}/bin/sonar-scanner \
+                        $SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectKey=camp \
                         -Dsonar.projectName=camp \
                         -Dsonar.sources=. \
                         -Dsonar.host.url=http://sonarqube:9000 \
                         -Dsonar.token=${SONAR_TOKEN}
                     '''
-  
-                }
-               
+                } 
             }
         }
 
