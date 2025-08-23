@@ -6,7 +6,7 @@ pipeline{
         nodejs 'nodejs'
     }
     environment {
-        SONAR_SCANNER = tool 'sonarqube'
+        SCANNER_HOME = tool 'sonarqube'
         SONAR_TOKEN=credentials('sonar-token')
     }
 
@@ -35,7 +35,7 @@ pipeline{
             steps{
                 withSonarQubeEnv('sonarqube') {
                     sh '''
-                        /bin/sonar-scanner \
+                        $SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectKey=camp \
                         -Dsonar.projectName=camp \
                         -Dsonar.sources=. \
