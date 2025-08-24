@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yelp-camp
+spec:
+  selector:
+    matchLabels:
+      app: yelp-camp
+  template:
+    metadata:
+      labels:
+        app: yelp-camp
+    spec:
+      containers:
+      - name: yelp-camp
+        image: rahul6364/yelp-camp:latest
+        ports:
+        - containerPort: 3000
+        env:
+          - name: CLOUDINARY_CLOUD_NAME
+            valueFrom:
+              secretKeyRef:
+                name: yelp-camp-secret
+                key: CLOUDINARY_CLOUD_NAME
+          - name: CLOUDINARY_KEY
+            valueFrom:
+              secretKeyRef:
+                name: yelp-camp-secret
+                key: CLOUDINARY_KEY
+          - name: CLOUDINARY_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: yelp-camp-secret
+                key: CLOUDINARY_SECRET
+          - name: MAPBOX_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: yelp-camp-secret
+                key: MAPBOX_TOKEN
+          - name: DB_URL
+            valueFrom:
+              secretKeyRef:
+                name: yelp-camp-secret
+                key: DB_URL
+          - name: SECRET
+            valueFrom:
+              secretKeyRef:
+                name: yelp-camp-secret
+                key: SECRET
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        
