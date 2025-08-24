@@ -8,7 +8,6 @@ pipeline{
     environment {
         SCANNER_HOME = tool 'sonarqube'
         SONAR_TOKEN=credentials('sonar-token-camp')
-        IMAGE_NAME = 'rahul6364/yelp-camp:latest'
     }
 
     stages{
@@ -51,7 +50,7 @@ pipeline{
             steps{
                 script{
                     withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
-                        sh "docker build -t ${IMAGE_NAME} ."
+                        sh "docker build -t rahul6364/yelp-camp:latest ."
                     }
                 }
             }
@@ -62,12 +61,16 @@ pipeline{
                 sh "trivy image --format table -o trivy-report.txt rahul6364/yelp-camp:latest"
             }
         }
-        stage('push to dockerhub'){
+        stage('image run'){
             steps{
                 script{
-                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
-                    sh "docker push ${IMAGE_NAME}"
+                    withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
+                        sh '''
+                        docker run -d -p 3000:3000 
+                        -e ..
+                        rahul6364/yelp-camp:latest \
+                        
+                        '''
                     }
                 }
             }
