@@ -8,10 +8,17 @@ pipeline{
     environment {
         SCANNER_HOME = tool 'sonarqube'
         SONAR_TOKEN=credentials('sonar-token-camp')
-        IMAGE_NAME = 'rahul6364/yelp-camp:latest'
+        IMAGE_NAME = 'rahul6364/yelp-camp'
+        IMAGE_TAG= "${RELEASE}-${BUILD_NUMBER}"
+        JENKINS_API_TOKEN=credentials('JENKINS_API_TOKEN')
     }
 
     stages{
+        stage('clean workspace'){
+            steps{
+                cleanWs()
+            }
+        }
         stage('git checkout'){
             steps{
                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/rahul6364/yelp_camp.git'
@@ -51,7 +58,7 @@ pipeline{
             steps{
                 script{
                     withDockerRegistry(credentialsId: 'dockerhub', toolName: 'docker') {
-                        sh "docker build -t ${IMAGE_NAME} ."
+                        sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
                     }
                 }
             }
@@ -59,7 +66,7 @@ pipeline{
 
         stage('trivy image scan'){
             steps{
-                sh "trivy image --format table -o trivy-report.txt rahul6364/yelp-camp:latest"
+                sh "trivy image --format table -o trivy-report.txt rahul6364/yelp-camp:${IMAGE_TAG}"
             }
         }
         stage('push to dockerhub'){
@@ -67,9 +74,24 @@ pipeline{
                 script{
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "docker login -u $DOCKER_USER -p $DOCKER_PASS"
-                    sh "docker push ${IMAGE_NAME}"
+                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
                     }
                 }
+            }
+        }
+        stage('post-build cleanup'){
+            steps{
+                cleanWs()
+            }
+        }
+        stage('trigger cd job'){
+            steps{
+            curl -v -k --user rahul:{JENKINS_API_TOKEN} \
+            -X post \
+            -H 'cache-control: no-cache' \
+            -H 'content-type: application/x-www-form-urlencoded' \
+            --data 'IMAGE_TAG=${IMAGE_TAG}' \
+            https://6728fc02d812.ngrok-free.app/job/camp-cd/buildWithParameters?token=gitOps-token
             }
         }
 
