@@ -84,16 +84,24 @@ pipeline{
                 cleanWs()
             }
         }
-        stage('trigger cd job'){
+        // stage('trigger cd job'){
+        //     steps{
+        //     curl -v -k --user rahul:{JENKINS_API_TOKEN} \
+        //     -X post \
+        //     -H 'cache-control: no-cache' \
+        //     -H 'content-type: application/x-www-form-urlencoded' \
+        //     --data 'IMAGE_TAG=${IMAGE_TAG}' \
+        //     https://6728fc02d812.ngrok-free.app/job/camp-cd/buildWithParameters?token=gitOps-token
+        //     }
+        // }
+        stage('trigger the cd job'){
             steps{
-            curl -v -k --user rahul:{JENKINS_API_TOKEN} \
-            -X post \
-            -H 'cache-control: no-cache' \
-            -H 'content-type: application/x-www-form-urlencoded' \
-            --data 'IMAGE_TAG=${IMAGE_TAG}' \
-            https://6728fc02d812.ngrok-free.app/job/camp-cd/buildWithParameters?token=gitOps-token
+                build job: 'camp-cd',
+                parameters: [
+                    string(name: 'IMAGE_TAG', value: "${IMAGE_TAG}")
+                ],
+                wait: false
             }
         }
-
     }
 }
