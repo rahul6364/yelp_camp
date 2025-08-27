@@ -2,6 +2,8 @@ if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
 }
 
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
@@ -48,6 +50,21 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(mongoSanitize({
     replaceWith: '_'
 }))
+
+app.use(session({
+    secret: process.env.SESSION_SECRET || "notagoodsecret",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URI,   // same URI you use for mongoose.connect
+        ttl: 24 * 60 * 60 // 1 day
+    }),
+    cookie: {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",  // true if served over HTTPS
+        sameSite: "lax"
+    }
+}));
 
 const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
 
@@ -117,7 +134,7 @@ app.use(
                 "'self'",
                 "blob:",
                 "data:",
-                `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`, 
+                `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/`,
                 "https://images.unsplash.com/",
             ],
             fontSrc: ["'self'", ...fontSrcUrls],
