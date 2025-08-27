@@ -9,7 +9,7 @@ pipeline{
         SCANNER_HOME = tool 'sonarqube'
         SONAR_TOKEN=credentials('sonar-token-camp')
         IMAGE_NAME = 'rahul6364/yelp-camp'
-        IMAGE_TAG= "${RELEASE}-${BUILD_NUMBER}"
+        IMAGE_TAG= "${BUILD_NUMBER}"
         JENKINS_API_TOKEN=credentials('JENKINS_API_TOKEN')
     }
 
