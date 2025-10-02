@@ -6,8 +6,8 @@ pipeline{
         nodejs 'nodejs'
     }
     environment {
-        SCANNER_HOME = tool 'sonar-Qube'
-        SONAR_TOKEN=credentials('sonar-token-camp')
+        SCANNER_HOME = tool 'sonarqube'
+        SONAR_TOKEN=credentials('sonar-token')
         IMAGE_NAME = 'rahul6364/yelp-camp'
         IMAGE_TAG= "1.0.${BUILD_NUMBER}"
         JENKINS_API_TOKEN=credentials('JENKINS_API_TOKEN')
