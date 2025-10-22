@@ -2,8 +2,6 @@ if (process.env.NODE_ENV !== "production") {
     require('dotenv').config();
 }
 
-const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const express = require('express');
 const path = require('path');
 const helmet = require('helmet');
@@ -11,6 +9,7 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const LocalStrategy = require('passport-local');
@@ -20,8 +19,6 @@ const User = require('./models/user');
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
-
-const MongoDBStore = require("connect-mongo")(session);
 
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/yelp-camp';
 
@@ -51,26 +48,10 @@ app.use(mongoSanitize({
     replaceWith: '_'
 }))
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || "notagoodsecret",
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URI,   // same URI you use for mongoose.connect
-        ttl: 24 * 60 * 60 // 1 day
-    }),
-    cookie: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",  // true if served over HTTPS
-        sameSite: "lax"
-    }
-}));
-
 const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
 
-const store = new MongoDBStore({
-    url: dbUrl,
-    secret,
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60 // after 1 day, update the session, else, only update session when something change
 });
 
