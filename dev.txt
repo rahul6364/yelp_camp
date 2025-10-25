@@ -78,3 +78,10 @@ pipeline{
 
     }
 }
+
+pipeline{
+    agent any
+
+    parameters{
+        string(name: 'IMAGE_TAG', defaultValue: 'v1.0', description: 'tag of the docker image to deploy')
+    }
