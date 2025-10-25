@@ -1,15 +1,15 @@
-<% if(success && success.length) {%>
+<% if(success && success.length > 0) {%>
 <div class="alert alert-success alert-dismissible fade show" role="alert">
-    <%= success %>
+    <%= success.join(', ') %>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 <% } %>
 
-<% if(error && error.length) {%>
+<% if(error && error.length > 0) {%>
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <%= error %>
+    <%= error.join(', ') %>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
