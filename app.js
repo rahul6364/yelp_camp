@@ -75,6 +75,15 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+
+// Debug session configuration
+app.use((req, res, next) => {
+    console.log("Session debug - Session ID:", req.sessionID);
+    console.log("Session debug - Session exists:", !!req.session);
+    console.log("Session debug - Flash function exists:", typeof req.flash);
+    next();
+});
+
 app.use(helmet({ contentSecurityPolicy: false }));
 
 
@@ -136,6 +145,12 @@ app.use((req, res, next) => {
     res.locals.currentUser = req.user || null; // req.user is user infomation in session that passport define for us
     res.locals.success = req.flash('success'); // message when success is invoked in route handler
     res.locals.error = req.flash('error');
+    
+    // Debug logging for flash messages
+    console.log("Flash success:", res.locals.success);
+    console.log("Flash error:", res.locals.error);
+    console.log("Session ID:", req.sessionID);
+    
     next();
 })
 
@@ -143,6 +158,11 @@ app.use('/', userRoutes);
 app.use('/campgrounds', campgroundRoutes)
 app.use('/campgrounds/:id/reviews', reviewRoutes)
 
+
+// Health check endpoint for Kubernetes
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 app.get('/', (req, res) => {
     res.render('home')
